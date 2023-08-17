@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dusty_dust/const/colors.dart';
 import 'package:dusty_dust/model/stat_model.dart';
 import 'package:dusty_dust/model/status_model.dart';
@@ -8,11 +10,15 @@ class MainAppBar extends StatelessWidget {
   final StatusModel status;
   final StatModel stat;
   final String region;
+  final DateTime dateTime;
+  final bool isExpended;
 
-  const MainAppBar({
+  const  MainAppBar({
     required this.status,
     required this.stat,
     required this.region,
+    required this.dateTime,
+    required this.isExpended,
     super.key,
   });
 
@@ -22,6 +28,8 @@ class MainAppBar extends StatelessWidget {
 
     return SliverAppBar(
       backgroundColor: status.primaryColor,
+      pinned: true,
+      title: isExpended ? null: Text("${region} ${DataUtils.getTimeFromDateTime(dateTime: dateTime)}"),
       expandedHeight: 500.0,
       flexibleSpace: SafeArea(
         child: FlexibleSpaceBar(

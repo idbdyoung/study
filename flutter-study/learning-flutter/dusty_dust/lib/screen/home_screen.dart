@@ -7,10 +7,11 @@ import 'package:dusty_dust/const/colors.dart';
 import 'package:dusty_dust/model/stat_model.dart';
 import 'package:dusty_dust/repository/stat_repository.dart';
 
-import 'package:dusty_dust/component/hourly_card.dart';
-import 'package:dusty_dust/component/category_card.dart';
+import 'package:dusty_dust/container/hourly_card.dart';
+import 'package:dusty_dust/container/category_card.dart';
 import 'package:dusty_dust/component/main_app_bar.dart';
 import 'package:dusty_dust/component/main_drawer.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,10 +22,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String region = regions[0];
+  bool isExpended = true;
+  ScrollController scrollController = ScrollController();
 
-  Future<Map<ItemCode, List<StatModel>>> fetchData() async {
-    Map<ItemCode, List<StatModel>> stats = {};
+  @override
+  initState() {
+    super.initState();
 
+    scrollController.addListener(scrollListener);
+  }
+
+  @override
+  dispose() {
+    scrollController.removeListener(scrollListener);
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchData() async {
     List<Future> futures = [];
 
     for (ItemCode itemCode in ItemCode.values) {
@@ -36,67 +51,60 @@ class _HomeScreenState extends State<HomeScreen> {
     for (int i = 0; i < results.length; i++) {
       final key = ItemCode.values[i];
       final value = results[i];
-      stats.addAll({key: value});
-    }
 
-    return stats;
+      final box = Hive.box<StatModel>(key.name);
+
+      for (StatModel stat in value) {
+        box.put(stat.dataTime.toString(), stat);
+      }
+    }
+  }
+
+  scrollListener() {
+    bool isExpended = scrollController.offset < 500 - kToolbarHeight;
+
+    if (isExpended != this.isExpended) {
+      setState(() {
+        this.isExpended = isExpended;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: MainDrawer(
-        selectedRegion: region,
-        onRegionTap: (String region) {
-          setState(() {
-            this.region = region;
-          });
-          Navigator.of(context).pop();
-        },
-      ),
-      body: FutureBuilder(
-        future: fetchData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            print(snapshot.error);
-            return Center(
-              child: Text('에러가 있습니다.'),
-            );
-          }
+    return ValueListenableBuilder(
+      valueListenable: Hive.box<StatModel>(ItemCode.PM10.name).listenable(),
+      builder: (context, box, widget) {
+        final recentStat = box.values.toList().last as StatModel;
 
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          Map<ItemCode, List<StatModel>> stats = snapshot.data!;
-          StatModel pm10RecentStat = stats[ItemCode.PM10]![0];
+        final status = DataUtils.getStatusItemCodeAndValue(
+          value: recentStat.getLevelFromRegion(region),
+          itemCode: ItemCode.PM10,
+        );
 
-          final status = DataUtils.getStatusItemCodeAndValue(
-              value: pm10RecentStat.seoul, itemCode: ItemCode.PM10);
-
-          final ssModel = stats.keys.map((key) {
-            final value = stats[key]!;
-            final stat = value[0];
-
-            return StatAndStatusModel(
-              itemCode: key,
-              statModel: stat,
-              statusModel: DataUtils.getStatusItemCodeAndValue(
-                value: stat.getLevelFromRegion(region),
-                itemCode: key,
-              ),
-            );
-          }).toList();
-
-          return Container(
+        return Scaffold(
+          drawer: MainDrawer(
+            selectedRegion: region,
+            onRegionTap: (String region) {
+              setState(() {
+                this.region = region;
+              });
+              Navigator.of(context).pop();
+            },
+            darkColor: status.darkColor,
+            lightColor: status.lightColor,
+          ),
+          body: Container(
             color: status.primaryColor,
             child: CustomScrollView(
+              controller: scrollController,
               slivers: [
                 MainAppBar(
-                  stat: pm10RecentStat,
+                  stat: recentStat,
                   status: status,
                   region: region,
+                  dateTime: recentStat.dataTime,
+                  isExpended: isExpended,
                 ),
                 SliverToBoxAdapter(
                   child: Column(
@@ -104,24 +112,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       CategoryCard(
                         region: region,
-                        models: ssModel,
                         darkColor: status.darkColor,
                         lightColor: status.lightColor,
                       ),
                       const SizedBox(
                         height: 16.0,
                       ),
-                      ...stats.keys.map((itemCode) {
-                       final stat = stats[itemCode]!;
-
+                      ...ItemCode.values.map((itemCode) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: HourlyCard(
                             darkColor: status.darkColor,
                             lightColor: status.lightColor,
                             region: region,
-                            category: DataUtils.itemCodeKrString(itemCode: itemCode),
-                            stats: stat,
+                            itemCode: itemCode,
                           ),
                         );
                       }).toList(),
@@ -133,9 +137,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
