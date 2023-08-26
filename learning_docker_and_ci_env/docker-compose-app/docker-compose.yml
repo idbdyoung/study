@@ -1,0 +1,8 @@
+version: "3"
+services:
+  redis-server:
+    image: "redis/redis-stack-server:latest"
+  node-app:
+    build: .
+    ports:
+      - "3333:8080"
