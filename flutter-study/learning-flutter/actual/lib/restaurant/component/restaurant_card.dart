@@ -1,4 +1,6 @@
 import 'package:actual/common/const/colors.dart';
+import 'package:actual/common/utils/data_utils.dart';
+import 'package:actual/restaurant/model/restaurant_detail_model.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:flutter/material.dart';
 
@@ -28,10 +30,11 @@ class RestaurantCard extends StatelessWidget {
 
   factory RestaurantCard.fromModel({
     required RestaurantModel model,
+    bool isDetail = false,
   }) {
     return RestaurantCard(
       image: Image.network(
-        model.thumbUrl,
+        DataUtils.pathToUrl(model.thumbUrl),
         fit: BoxFit.cover,
       ),
       name: model.name,
@@ -40,6 +43,8 @@ class RestaurantCard extends StatelessWidget {
       deliveryTime: model.deliveryTime,
       deliveryFee: model.deliveryFee,
       ratings: model.ratings,
+      isDetail: isDetail,
+      detail: model is RestaurantDetailModel ? model.detail: null,
     );
   }
 
