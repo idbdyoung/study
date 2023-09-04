@@ -3,6 +3,9 @@ import 'package:riverpos/layout/default_layout.dart';
 import 'package:riverpos/screen/auto_dispose_modifier_screen.dart';
 import 'package:riverpos/screen/family_modifier_screen.dart';
 import 'package:riverpos/screen/future_provider_scrren.dart';
+import 'package:riverpos/screen/listen_provider_2_screen.dart';
+import 'package:riverpos/screen/listen_provider_screen.dart';
+import 'package:riverpos/screen/select_provider_screen.dart';
 import 'package:riverpos/screen/state_notifier_provider_screen.dart';
 import 'package:riverpos/screen/state_provider_screen.dart';
 import 'package:riverpos/screen/stream_provider_screen.dart';
@@ -75,7 +78,37 @@ class HomeScreen extends StatelessWidget {
               );
             },
             child: Text('AutoDisposeModifierScreen'),
-          )
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ListenProviderScreen(),
+                ),
+              );
+            },
+            child: Text('ListenProviderScreen'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ListenProviderScreen2(),
+                ),
+              );
+            },
+            child: Text('ListenProviderScreen2'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => SelectProviderScreen(),
+                ),
+              );
+            },
+            child: Text('SelectProviderScreen'),
+          ),
         ],
       ),
     );
