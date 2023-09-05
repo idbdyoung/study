@@ -5,6 +5,8 @@ import 'package:riverpos/screen/family_modifier_screen.dart';
 import 'package:riverpos/screen/future_provider_scrren.dart';
 import 'package:riverpos/screen/listen_provider_2_screen.dart';
 import 'package:riverpos/screen/listen_provider_screen.dart';
+import 'package:riverpos/screen/provider2_screen.dart';
+import 'package:riverpos/screen/provider_screen.dart';
 import 'package:riverpos/screen/select_provider_screen.dart';
 import 'package:riverpos/screen/state_notifier_provider_screen.dart';
 import 'package:riverpos/screen/state_provider_screen.dart';
@@ -108,6 +110,26 @@ class HomeScreen extends StatelessWidget {
               );
             },
             child: Text('SelectProviderScreen'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ProviderScreen(),
+                ),
+              );
+            },
+            child: Text('ProviderScreen'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => Provider2Screen(),
+                ),
+              );
+            },
+            child: Text('Provider2Screen'),
           ),
         ],
       ),
