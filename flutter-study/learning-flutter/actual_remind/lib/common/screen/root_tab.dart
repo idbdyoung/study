@@ -1,5 +1,6 @@
 import 'package:actual_remind/common/const/colors.dart';
 import 'package:actual_remind/common/layout/default_layout.dart';
+import 'package:actual_remind/restaurant/view/restaurant_screen.dart';
 import 'package:flutter/material.dart';
 
 class RootTab extends StatefulWidget {
@@ -24,6 +25,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     controller.dispose();
+
     super.dispose();
   }
 
@@ -42,9 +44,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
           physics: const NeverScrollableScrollPhysics(),
           controller: controller,
           children: [
-            Container(
-              child: Text('홈'),
-            ),
+            RestaurantScreen(),
             Container(
               child: Text('음식'),
             ),
