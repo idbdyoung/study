@@ -1,9 +1,11 @@
 import 'package:actual_remind/common/const/colors.dart';
 import 'package:actual_remind/common/const/data.dart';
+import 'package:actual_remind/common/utils/data_utils.dart';
+import 'package:actual_remind/restaurant/model/restaurant_model.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantCard extends StatelessWidget {
-  final String image;
+  final Widget image;
   final String name;
   final List<dynamic> tags;
   final int ratingsCount;
@@ -22,13 +24,27 @@ class RestaurantCard extends StatelessWidget {
     super.key,
   });
 
+  factory RestaurantCard.fromModel({required RestaurantModel model}) {
+    return RestaurantCard(
+      image: Image.network(
+        DataUtils.pathToUrl(model.thumbUrl),
+      ),
+      name: model.name,
+      tags: model.tags,
+      ratingsCount: model.ratingsCount,
+      deliveryTime: model.deliveryTime,
+      deliveryFee: model.deliveryFee,
+      ratings: model.ratings,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(12.0),
-          child: Image.network('http://$IP/${image}'),
+          child: image,
         ),
         const SizedBox(
           height: 16.0,

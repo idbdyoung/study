@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 final dioProvider = Provider((ref) {
   final dio = Dio();
 
-  final storage = ref.watch(secureStorage);
+  final storage = ref.watch(secureStorageProvider);
 
   dio.interceptors.add(
     CustomInterceptor(storage: storage),

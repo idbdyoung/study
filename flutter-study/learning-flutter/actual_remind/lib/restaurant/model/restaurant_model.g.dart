@@ -10,7 +10,7 @@ RestaurantModel _$RestaurantModelFromJson(Map<String, dynamic> json) =>
     RestaurantModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      thumbnail: json['thumbnail'] as String,
+      thumbUrl: json['thumbUrl'] as String,
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
       priceRange:
           $enumDecode(_$RestaurantPriceRangeEnumMap, json['priceRange']),
@@ -24,7 +24,7 @@ Map<String, dynamic> _$RestaurantModelToJson(RestaurantModel instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'thumbnail': instance.thumbnail,
+      'thumbUrl': instance.thumbUrl,
       'tags': instance.tags,
       'priceRange': _$RestaurantPriceRangeEnumMap[instance.priceRange]!,
       'ratings': instance.ratings,

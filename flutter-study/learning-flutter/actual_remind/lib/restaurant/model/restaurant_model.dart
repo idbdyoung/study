@@ -13,7 +13,7 @@ enum RestaurantPriceRange {
 class RestaurantModel {
   final String id;
   final String name;
-  final String thumbnail;
+  final String thumbUrl;
   final List<String> tags;
   final RestaurantPriceRange priceRange;
   final double ratings;
@@ -27,7 +27,7 @@ class RestaurantModel {
     @JsonKey(
       fromJson: DataUtils.pathToUrl,
     )
-    required this.thumbnail,
+    required this.thumbUrl,
     required this.tags,
     required this.priceRange,
     required this.ratings,
