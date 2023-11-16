@@ -1,17 +1,40 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:baemin/common/component/custom_text_form_field.dart';
 import 'package:baemin/common/const/colors.dart';
 import 'package:baemin/common/layout/default_layout.dart';
+import 'package:baemin/common/view/root_tab.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String username = '';
+  String password = '';
+
+  @override
   Widget build(BuildContext context) {
+    final dio = Dio();
+
+    // localhost
+    final emulatorIp = '10.0.2.2:5555';
+    final simulatorIp = '127.0.0.1:5555';
+
+    final ip = Platform.isIOS ? simulatorIp : emulatorIp;
+
     return DefaultLayout(
-      child: SingleChildScrollView( // 키보드 클릭시 화면의 범위를 침번해서 오류나는 것을 스크롤 하게끔하여 오류를 막을 수 있음
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // 드래그 하는 순간에 키보드 사라지게 함
+      child: SingleChildScrollView(
+        // 키보드 클릭시 화면의 범위를 침번해서 오류나는 것을 스크롤 하게끔하여 오류를 막을 수 있음
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        // 드래그 하는 순간에 키보드 사라지게 함
         child: SafeArea(
           top: true,
           child: Padding(
@@ -28,23 +51,62 @@ class LoginScreen extends StatelessWidget {
                 ),
                 CustomTextFormField(
                   hintText: '이메일을 입력해 주세요.',
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    username = value;
+                  },
                 ),
                 const SizedBox(height: 16.0),
                 CustomTextFormField(
                   hintText: '비밀번호를 입력해 주세요.',
-                  onChanged: (String value) {},
+                  onChanged: (String value) {
+                    password = value;
+                  },
                   obscureText: true,
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final rawString = '$username:$password';
+
+                    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                    String token = stringToBase64.encode(rawString);
+
+                    final resp = await dio.post(
+                      'http://$ip/auth/login',
+                      options: Options(
+                        headers: {
+                          'authorization': 'Basic $token',
+                        },
+                      ),
+                    );
+
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RootTab(),
+                      ),
+                    );
+                    print(resp.data);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR,
                   ),
                   child: const Text('로그인'),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final refreshToken =
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTcwMDA5MzEyMSwiZXhwIjoxNzAwMTc5NTIxfQ.OZT2aA5blhCgNjg-tSqZ5ApqARZTnvWbyH90e-fT1WY';
+
+                    final resp = await dio.post(
+                      'http://$ip/auth/token',
+                      options: Options(
+                        headers: {
+                          'authorization': 'Bearer $refreshToken',
+                        },
+                      ),
+                    );
+
+                    print(resp.data);
+                  },
                   style: TextButton.styleFrom(
                     foregroundColor: PRIMARY_COLOR,
                   ),
