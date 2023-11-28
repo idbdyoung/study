@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:baemin/common/component/custom_text_form_field.dart';
 import 'package:baemin/common/const/colors.dart';
+import 'package:baemin/common/const/data.dart';
 import 'package:baemin/common/layout/default_layout.dart';
 import 'package:baemin/common/view/root_tab.dart';
 import 'package:dio/dio.dart';
@@ -23,12 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final dio = Dio();
-
-    // localhost
-    final emulatorIp = '10.0.2.2:5555';
-    final simulatorIp = '127.0.0.1:5555';
-
-    final ip = Platform.isIOS ? simulatorIp : emulatorIp;
 
     return DefaultLayout(
       child: SingleChildScrollView(
@@ -78,13 +72,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     );
+                    final refreshToken = resp.data['refreshToken'];
+                    final accessToken = resp.data['accessToken'];
+
+                    await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
+                    await storage.write(key:ACCESS_TOKEN_KEY, value: accessToken);
 
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => RootTab(),
                       ),
                     );
-                    print(resp.data);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: PRIMARY_COLOR,
