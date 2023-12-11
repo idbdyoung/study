@@ -122,8 +122,8 @@ class RestaurantCard extends StatelessWidget {
   }
 
   Widget renderDot() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.0),
       child: Text(
         '·',
         style: TextStyle(
