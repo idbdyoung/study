@@ -1,7 +1,7 @@
 import 'package:baemin_again/common/utils/data_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part restaurant_
+part 'restaurant_product_model.g.dart';
 
 @JsonSerializable()
 class RestaurantProductModel {

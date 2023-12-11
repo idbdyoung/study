@@ -1,6 +1,20 @@
 import 'package:actual/common/const/data.dart';
+import 'package:actual/common/secure_storage/secure_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final dioProvider = Provider((ref) {
+  final dio = Dio();
+
+  final storage = ref.watch(secureStorageProvider);
+
+  dio.interceptors.add(
+    CustomInterceptor(storage: storage),
+  );
+
+  return dio;
+});
 
 class CustomInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
@@ -50,7 +64,8 @@ class CustomInterceptor extends Interceptor {
       return handler.reject(err);
     }
     final isStatus401 = err.response?.statusCode == 401;
-    final isRefreshInvalid = err.requestOptions.path == '/auth/token'; //accessToken을 붙여서 보냈다는 소리
+    final isRefreshInvalid =
+        err.requestOptions.path == '/auth/token'; //accessToken을 붙여서 보냈다는 소리
 
     if (isStatus401 && !isRefreshInvalid) {
       final dio = Dio();

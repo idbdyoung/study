@@ -3,6 +3,7 @@ import 'package:actual_remind/common/secure_storage/secure_storage.dart';
 import 'package:actual_remind/restaurant/component/restaurant_card.dart';
 import 'package:actual_remind/restaurant/model/restaurant_model.dart';
 import 'package:actual_remind/restaurant/repository/restaurant_repository.dart';
+import 'package:actual_remind/restaurant/view/restaurant_detail_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:actual_remind/common/const/data.dart';
@@ -31,9 +32,18 @@ class RestaurantScreen extends ConsumerWidget {
                   height: 16.0,
                 ),
                 itemBuilder: (_, index) {
-                  final model = snapshot.data!.data[index];
+                  final item = snapshot.data!.data[index];
 
-                  return RestaurantCard.fromModel(model: model);
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => RestaurantDetailScreen(id: item.id),
+                        ),
+                      );
+                    },
+                    child: RestaurantCard.fromModel(model: item),
+                  );
                 },
               );
             },

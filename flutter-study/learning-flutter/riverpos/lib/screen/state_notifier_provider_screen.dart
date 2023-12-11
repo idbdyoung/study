@@ -4,8 +4,8 @@ import 'package:riverpos/layout/default_layout.dart';
 import 'package:riverpos/model/shopping_item_model.dart';
 import 'package:riverpos/riverpod/state_notifier_provider.dart';
 
-class StateNotifierProvider extends ConsumerWidget {
-  const StateNotifierProvider({super.key});
+class StateNotifierProviderScreen extends ConsumerWidget {
+  const StateNotifierProviderScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +14,17 @@ class StateNotifierProvider extends ConsumerWidget {
     return DefaultLayout(
       title: 'StateNotifierProvider',
       body: ListView(
-        children: state.map((e) => Text(e.name)).toList(),
+        children: state
+            .map(
+              (e) => CheckboxListTile(
+                title: Text(e.name),
+                value: e.hasBought,
+                onChanged: (value) {
+                  ref.read(shoppingListProvider.notifier).toggleHasBought(name: e.name);
+                },
+              ),
+            )
+            .toList(),
       ),
     );
   }
