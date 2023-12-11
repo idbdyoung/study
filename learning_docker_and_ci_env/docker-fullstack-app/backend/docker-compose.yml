@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  node-app:
+    image: node:alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+      # - v $(pwd):/usr/src/app 과 같음
+      # - /usr/src/app/node_modules
+    command: npm run start
+    ports:
+      - "3333:3333"
+    environment:
+      - NODE_ENV=production
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+    # 순서를 의미함 (무엇에 의존하고 있는지 명시해서 먼저 실행되야 할 것들이 있는지 정의)
+      - node-app
